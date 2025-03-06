@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About Mohamed Ashraf</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #2a003d, #6a00a8);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      position: relative;
+      overflow: hidden;
+    }
+    #mycanvas {
+      position: absolute;
+      width: 100vw;
+      height: 100vh;
+      top: 0;
+      left: 0;
+      z-index: 1;
+    }
+    .profile-container {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      background: rgba(30, 30, 30, 0.9);
+      padding: 2vh;
+      border-radius: 8px;
+      box-shadow: 0 4px 20px rgba(155, 77, 202, 0.7);
+      max-width: 90vw;
+      width: 350px;
+    }
+    .profile-container img {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      margin-bottom: 10px;
+    }
+    .profile-container h2 {
+      margin-bottom: 5px;
+      font-size: 1.5rem;
+    }
+    .social-links a {
+      color: white;
+      text-decoration: none;
+      font-size: 1rem;
+      margin: 8px;
+      display: block;
+      background: #9b4dca;
+      padding: 8px;
+      border-radius: 5px;
+      transition: 0.3s;
+    }
+    .social-links a:hover {
+      background: #7a3e99;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="mycanvas"></canvas>
+  <div class="profile-container">
+    <img src="Nebula.png" alt="Profile Picture">
+    <h2>Mohamed Ashraf</h2>
+    <p>Age: 12</p>
+    <p>From: Egypt</p>
+    <p>Lua, Python, and Website Developer</p>
+    <div class="social-links">
+      <a href="https://www.facebook.com/profile.php?id=100082820809325" target="_blank">Facebook</a>
+      <a href="https://discord.gg/KQQ3vfSMP4" target="_blank">Discord</a>
+      <a href="https://www.tiktok.com/@s7xsm" target="_blank">TikTok</a>
+      <a href="https://www.instagram.com/im_mo7_amed" target="_blank">Instagram</a>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('mycanvas');
+    const ctx = canvas.getContext('2d');
+    let particles = [];
+    const mouse = { x: undefined, y: undefined };
+
+    function setCanvasSize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      particles = [];
+      initParticles();
+    }
+
+    class Particle {
+      constructor() {
+        this.x = Math.random() * canvas.width;
+        this.y = Math.random() * canvas.height;
+        this.size = Math.random() * 4 + 1;
+        this.speedX = Math.random() * 1 - 0.5;
+        this.speedY = Math.random() * 1 - 0.5;
+        this.color = `hsl(280, 100%, 70%)`;
+      }
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+        if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+
+        let dx = mouse.x - this.x;
+        let dy = mouse.y - this.y;
+        let distance = Math.sqrt(dx * dx + dy * dy);
+        let maxDistance = 100;
+        let force = (maxDistance - distance) / maxDistance;
+
+        if (distance < maxDistance) {
+          this.x -= dx / distance * force * 10;
+          this.y -= dy / distance * force * 10;
+        }
+      }
+      draw() {
+        ctx.fillStyle = this.color;
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    function initParticles() {
+      for (let i = 0; i < Math.min(200, (canvas.width * canvas.height) / 5000); i++) {
+        particles.push(new Particle());
+      }
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      particles.forEach(particle => {
+        particle.update();
+        particle.draw();
+      });
+      requestAnimationFrame(animate);
+    }
+
+    window.addEventListener('mousemove', (e) => {
+      mouse.x = e.x;
+      mouse.y = e.y;
+    });
+
+    window.addEventListener('resize', setCanvasSize);
+
+    setCanvasSize();
+    animate();
+  </script>
+</body>
+</html>
